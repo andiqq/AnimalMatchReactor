@@ -1,62 +1,88 @@
 ﻿using Microsoft.Maui.Layouts;
+using System.Collections.ObjectModel;
 
-namespace MauiReactor.Startup.Components;
-
-public class HomePageState
+namespace MauiReactor.Startup.Components
 {
-    public bool IsVisibleNewGameButton { get; set; }
-    public bool IsVisibleAnimalButtons { get; set; }
-    
-}
-
-public class HomePage : Component<HomePageState>
-{
-    protected override void OnMounted()
+    public class HomePageState
     {
-        State.IsVisibleNewGameButton = true;
-        State.IsVisibleAnimalButtons = false;
-        base.OnMounted();
+        public bool IsVisibleNewGameButton { get; set; }
+        public bool IsVisibleAnimalButtons { get; set; }
     }
 
-    public override VisualNode Render()
-        => ContentPage(
-            ScrollView(
-                VStack(
-                        Button("Play again?")
-                            .OnClicked(PlayAgainButton_OnClicked)
-                            .IsVisible(State.IsVisibleNewGameButton)
-                            .FontSize(24),
+    public class HomePage : Component<HomePageState>
+    {
+        private readonly List<string> _animalEmojis =
+        [
+            "🦆", "🦆",
+            "🦅", "🦅",
+            "🐜", "🐜",
+            "🦇", "🦇",
+            "🦣", "🦣",
+            "🐿", "️🐿️",
+            "🐞", "🐞",
+            "🐢", "🐢"
+        ];
 
-                        Label("Time Elapsed: 0.0 seconds")
-                            .FontSize(24),
+        private List<string>? _emojis;
 
-                        FlexLayout(
-                                Enumerable.Range(1, 16).Select(_ =>
-                                    Button()
-                                        .BackgroundColor(Colors.LightBlue)
-                                        .BorderColor(Colors.Black)
-                                        .BorderWidth(1)
-                                        .HeightRequest(100)
-                                        .WidthRequest(100)
-                                        .FontSize(60)
-                                        .OnClicked(ButtonClicked)
+        protected override void OnMounted()
+        {
+            State.IsVisibleNewGameButton = true;
+            State.IsVisibleAnimalButtons = false;
+            _emojis = new List<string>(_animalEmojis);
+            base.OnMounted();
+        }
+
+        public override VisualNode Render()
+            => ContentPage(
+                ScrollView(
+                    VStack(
+                            Button("Play again?")
+                                .OnClicked(PlayAgainButton_OnClicked)
+                                .IsVisible(State.IsVisibleNewGameButton)
+                                .FontSize(24),
+
+                            Label("Time Elapsed: 0.0 seconds")
+                                .FontSize(24),
+
+                            FlexLayout(
+                                    Enumerable.Range(1, 16).Select(_ =>
+                                        Button(SetEmoji())
+                                            .BackgroundColor(Colors.LightBlue)
+                                            .BorderColor(Colors.Black)
+                                            .BorderWidth(1)
+                                            .HeightRequest(100)
+                                            .WidthRequest(100)
+                                            .FontSize(60)
+                                            .OnClicked(ButtonClicked)
+                                    )
                                 )
-                            )
-                            .Wrap(FlexWrap.Wrap)
-                            .MaximumWidthRequest(400)
-                            .IsVisible(State.IsVisibleAnimalButtons)
-                    )
-                    .Spacing(25)
-                    .Padding(30, 0)
-            ));
-    private void PlayAgainButton_OnClicked(object? sender, EventArgs e)
-    {
-        SetState( s => s.IsVisibleAnimalButtons = true);
-        SetState( s => s.IsVisibleNewGameButton = false);
-    }
+                                .Wrap(FlexWrap.Wrap)
+                                .MaximumWidthRequest(400)
+                                .IsVisible(State.IsVisibleAnimalButtons)
+                        )
+                        .Spacing(25)
+                        .Padding(30, 0)
+                ));
 
-    private static void ButtonClicked(object? arg1, EventArgs arg2)
-    {
-        throw new NotImplementedException();
+        private string SetEmoji()
+        {
+            var index = Random.Shared.Next(_emojis.Count);
+            var nextEmoji = _emojis[index];
+            _emojis.RemoveAt(index);
+            return nextEmoji;
+        }
+
+        private void PlayAgainButton_OnClicked(object? sender, EventArgs e)
+        {
+            _emojis = new List<string>(_animalEmojis);
+            SetState(s => s.IsVisibleAnimalButtons = true);
+            SetState(s => s.IsVisibleNewGameButton = false);
+        }
+
+        private static void ButtonClicked(object? arg1, EventArgs arg2)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

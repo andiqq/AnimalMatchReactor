@@ -18,7 +18,7 @@ namespace MauiReactor.Startup.Components
             "🐜", "🐜",
             "🦇", "🦇",
             "🦣", "🦣",
-            "🐿", "️🐿️",
+            "🐿", "🐿",
             "🐞", "🐞",
             "🐢", "🐢"
         ];
@@ -32,6 +32,10 @@ namespace MauiReactor.Startup.Components
             _emojis = new List<string>(_animalEmojis);
             base.OnMounted();
         }
+        
+        Microsoft.Maui.Controls.Button lastClicked;
+        bool findingMatch = false;
+        int matchesFound = 0;
 
         public override VisualNode Render()
             => ContentPage(
@@ -73,16 +77,48 @@ namespace MauiReactor.Startup.Components
             return nextEmoji;
         }
 
-        private void PlayAgainButton_OnClicked(object? sender, EventArgs e)
+        private void PlayAgainButton_OnClicked()
         {
-            _emojis = new List<string>(_animalEmojis);
+            _emojis = new List<string>(_animalEmojis); 
             SetState(s => s.IsVisibleAnimalButtons = true);
             SetState(s => s.IsVisibleNewGameButton = false);
+            Invalidate();
         }
-
-        private static void ButtonClicked(object? arg1, EventArgs arg2)
+        
+        private void ButtonClicked(object? sender, EventArgs e)
         {
-            throw new NotImplementedException();
+            if (sender is Microsoft.Maui.Controls.Button button)
+            {
+                if (!string.IsNullOrWhiteSpace(button.Text) && findingMatch == false)
+                {
+                    button.BackgroundColor = Colors.Red;
+                    lastClicked = button;
+                    findingMatch = true;
+                }
+                else
+                {
+                    if (button != lastClicked && button.Text == lastClicked.Text)
+                    {
+                        matchesFound++;
+                        lastClicked.Text = " ";
+                        button.Text = " ";
+                    }
+
+                    lastClicked.BackgroundColor = Colors.LightBlue;
+                    button.BackgroundColor = Colors.LightBlue;
+                    findingMatch = false;
+                }
+            }
+
+            if (matchesFound == 8)
+            {
+                _emojis = new List<string>(_animalEmojis);
+                    matchesFound = 0;
+                    SetState(s => s.IsVisibleAnimalButtons = false);
+                    SetState(s => s.IsVisibleNewGameButton = true);
+                    Invalidate();
+            }
         }
+        
     }
 }

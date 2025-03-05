@@ -22,5 +22,4 @@ namespace MauiReactor.Startup.WinUI
 
         protected override MauiApp CreateMauiApp() => MauiProgram.CreateMauiApp();
     }
-
 }

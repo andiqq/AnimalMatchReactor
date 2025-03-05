@@ -1,14 +1,15 @@
-﻿namespace AnimalMatchingGame;
+﻿using MauiReactor.Startup.Components;
 
-public partial class App : Application
+namespace MauiReactor.Startup;
+
+public partial class App
 {
-    public App()
+    public App(IServiceProvider serviceProvider)
+        :base(serviceProvider)
     {
         InitializeComponent();
     }
-
-    protected override Window CreateWindow(IActivationState? activationState)
-    {
-        return new Window(new MainPage());
-    }
 }
+
+public abstract class MauiReactorApplication(IServiceProvider serviceProvider)
+    : ReactorApplication<HomePage>(serviceProvider);

@@ -1,9 +1,4 @@
-﻿using MauiReactor;
-using MauiReactor.Startup.Components;
-using Microsoft.Extensions.Logging;
-using Microsoft.Maui.Hosting;
-
-namespace MauiReactor.Startup
+﻿namespace MauiReactor.Startup
 {
     public static class MauiProgram
     {
@@ -11,7 +6,7 @@ namespace MauiReactor.Startup
         {
             var builder = MauiApp.CreateBuilder();
             builder
-                .UseMauiReactorApp<HomePage>()
+                .UseMauiApp<App>()
                 .ConfigureFonts(fonts =>
                 {
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");

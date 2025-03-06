@@ -1,124 +1,85 @@
 ﻿using Microsoft.Maui.Layouts;
-using System.Collections.ObjectModel;
+using MauiReactor.Startup.Models;
 
-namespace MauiReactor.Startup.Components
+namespace MauiReactor.Startup.Components;
+
+public class HomePageState
 {
-    public class HomePageState
+    public bool IsVisibleNewGameButton { get; set; } = true;
+    public bool IsVisibleAnimalButtons { get; set; }
+    public int TimeElapsed { get; set; }
+    public bool Toggle { get; set; }
+}
+
+
+
+public class HomePage : Component<HomePageState>
+{
+    private readonly GameState _gameState = new();
+
+    public override VisualNode Render()
+        => ContentPage(
+            ScrollView(
+                VStack(
+                    Timer()
+                        .Interval(100)
+                        .IsEnabled(!State.IsVisibleNewGameButton)
+                        .OnTick(_ => SetState(s => s.TimeElapsed++)),
+
+                    Label($"Time elapsed: {State.TimeElapsed / 10f:0.0}s")
+                        .FontSize(24),
+
+                    Button("Play again?")
+                        .OnClicked(PlayAgainButton_OnClicked)
+                        .IsVisible(State.IsVisibleNewGameButton)
+                        .FontSize(24),
+
+                    FlexLayout(
+                        _gameState.AnimalButtons.Select((button, index) =>
+                            Button(button.Emoji)
+                                .BackgroundColor(button.Selected ? Colors.Purple : Colors.LightBlue)
+                                .BorderColor(Colors.Black)
+                                .BorderWidth(1)
+                                .HeightRequest(100)
+                                .WidthRequest(100)
+                                .FontSize(60)
+                                .OnClicked(async (sender, _) =>
+                                {
+                                    ButtonClicked(index);
+                                    var tappedButton = (VisualElement)sender!;
+                                    await MauiControls.ViewExtensions.ScaleTo(tappedButton, 0.8, 50, Easing.Linear);
+                                    await MauiControls.ViewExtensions.ScaleTo(tappedButton, 1, 500, Easing.SpringOut);
+                                })
+                        )
+                    )
+                    .Wrap(FlexWrap.Wrap)
+                    .MaximumWidthRequest(400)
+                    .IsVisible(State.IsVisibleAnimalButtons)
+                )
+                .Spacing(25)
+                .Padding(30, 0)
+            )
+        );
+
+    private void PlayAgainButton_OnClicked()
     {
-        public bool IsVisibleNewGameButton { get; set; }
-        public bool IsVisibleAnimalButtons { get; set; }
+        _gameState.ResetGame();
+        SetState(s =>
+        {
+            s.IsVisibleAnimalButtons = true;
+            s.IsVisibleNewGameButton = false;
+            s.TimeElapsed = 0;
+        });
     }
 
-    public class HomePage : Component<HomePageState>
+    private void ButtonClicked(int index)
     {
-        private readonly List<string> _animalEmojis =
-        [
-            "🦆", "🦆",
-            "🦅", "🦅",
-            "🐜", "🐜",
-            "🦇", "🦇",
-            "🦣", "🦣",
-            "🐿", "🐿",
-            "🐞", "🐞",
-            "🐢", "🐢"
-        ];
-
-        private List<string>? _emojis;
-
-        protected override void OnMounted()
+        bool gameWon = _gameState.ClickButton(index);
+        if (!gameWon) return;
+        SetState(s =>
         {
-            State.IsVisibleNewGameButton = true;
-            State.IsVisibleAnimalButtons = false;
-            _emojis = new List<string>(_animalEmojis);
-            base.OnMounted();
-        }
-        
-        Microsoft.Maui.Controls.Button lastClicked;
-        bool findingMatch = false;
-        int matchesFound = 0;
-
-        public override VisualNode Render()
-            => ContentPage(
-                ScrollView(
-                    VStack(
-                            Button("Play again?")
-                                .OnClicked(PlayAgainButton_OnClicked)
-                                .IsVisible(State.IsVisibleNewGameButton)
-                                .FontSize(24),
-
-                            Label("Time Elapsed: 0.0 seconds")
-                                .FontSize(24),
-
-                            FlexLayout(
-                                    Enumerable.Range(1, 16).Select(_ =>
-                                        Button(SetEmoji())
-                                            .BackgroundColor(Colors.LightBlue)
-                                            .BorderColor(Colors.Black)
-                                            .BorderWidth(1)
-                                            .HeightRequest(100)
-                                            .WidthRequest(100)
-                                            .FontSize(60)
-                                            .OnClicked(ButtonClicked)
-                                    )
-                                )
-                                .Wrap(FlexWrap.Wrap)
-                                .MaximumWidthRequest(400)
-                                .IsVisible(State.IsVisibleAnimalButtons)
-                        )
-                        .Spacing(25)
-                        .Padding(30, 0)
-                ));
-
-        private string SetEmoji()
-        {
-            var index = Random.Shared.Next(_emojis.Count);
-            var nextEmoji = _emojis[index];
-            _emojis.RemoveAt(index);
-            return nextEmoji;
-        }
-
-        private void PlayAgainButton_OnClicked()
-        {
-            _emojis = new List<string>(_animalEmojis); 
-            SetState(s => s.IsVisibleAnimalButtons = true);
-            SetState(s => s.IsVisibleNewGameButton = false);
-            Invalidate();
-        }
-        
-        private void ButtonClicked(object? sender, EventArgs e)
-        {
-            if (sender is Microsoft.Maui.Controls.Button button)
-            {
-                if (!string.IsNullOrWhiteSpace(button.Text) && findingMatch == false)
-                {
-                    button.BackgroundColor = Colors.Red;
-                    lastClicked = button;
-                    findingMatch = true;
-                }
-                else
-                {
-                    if (button != lastClicked && button.Text == lastClicked.Text)
-                    {
-                        matchesFound++;
-                        lastClicked.Text = " ";
-                        button.Text = " ";
-                    }
-
-                    lastClicked.BackgroundColor = Colors.LightBlue;
-                    button.BackgroundColor = Colors.LightBlue;
-                    findingMatch = false;
-                }
-            }
-
-            if (matchesFound == 8)
-            {
-                _emojis = new List<string>(_animalEmojis);
-                    matchesFound = 0;
-                    SetState(s => s.IsVisibleAnimalButtons = false);
-                    SetState(s => s.IsVisibleNewGameButton = true);
-                    Invalidate();
-            }
-        }
-        
+            s.IsVisibleAnimalButtons = false;
+            s.IsVisibleNewGameButton = true;
+        });
     }
 }

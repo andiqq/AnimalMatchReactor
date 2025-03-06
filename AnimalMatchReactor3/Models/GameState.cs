@@ -12,7 +12,7 @@ public class GameState
 
     private readonly Random _rng = new();
     private AnimalButton? _lastClicked;
-    private int _lastIndex = -1;
+    private int? _lastIndex = null;
     private bool _findingMatch;
 
     public List<AnimalButton> AnimalButtons { get; private set; } = [];
@@ -26,7 +26,7 @@ public class GameState
         AnimalButtons = shuffledEmojis.Select(e => new AnimalButton(e, false)).ToList();
         MatchesFound = 0;
         _lastClicked = null;
-        _lastIndex = -1;
+        _lastIndex = null;
         _findingMatch = false;
     }
 
@@ -48,22 +48,22 @@ public class GameState
             return false;
         }
 
-        bool isMatch = button.Emoji == _lastClicked.Emoji && index != _lastIndex;
+        bool isMatch = button.Emoji == _lastClicked!.Emoji && index != _lastIndex;
         if (isMatch)
         {
             AnimalButtons[index] = new AnimalButton(" ", false);
-            AnimalButtons[_lastIndex] = new AnimalButton(" ", false);
+            AnimalButtons[(int)_lastIndex!] = new AnimalButton(" ", false);
             MatchesFound++;
         }
         else
         {
             AnimalButtons[index] = button with { Selected = false };
-            AnimalButtons[_lastIndex] = _lastClicked with { Selected = false };
+            AnimalButtons[(int)_lastIndex!] = _lastClicked with { Selected = false };
         }
 
         _findingMatch = false;
         _lastClicked = null;
-        _lastIndex = -1;
+        _lastIndex = null;
 
         return MatchesFound == _animalEmojis.Count / 2; // Return true if game is won
     }

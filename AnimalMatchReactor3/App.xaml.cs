@@ -1,6 +1,6 @@
-﻿using MauiReactor.Startup.Components;
+﻿using AnimalMatchReactor.Components;
 
-namespace MauiReactor.Startup;
+namespace AnimalMatchReactor;
 
 public partial class App
 {

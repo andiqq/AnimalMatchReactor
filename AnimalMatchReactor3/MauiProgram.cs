@@ -1,4 +1,4 @@
-﻿namespace MauiReactor.Startup
+﻿namespace AnimalMatchReactor
 {
     public static class MauiProgram
     {

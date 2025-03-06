@@ -1,4 +1,4 @@
-namespace MauiReactor.Startup.Models;
+namespace AnimalMatchReactor.Models;
 
 public class GameState
 {

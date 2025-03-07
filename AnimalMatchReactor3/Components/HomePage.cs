@@ -25,7 +25,7 @@ public class HomePage : Component<HomePageState>
                             .OnTick(_ => SetState(s => s.TimeElapsed++)),
                         Label($"Time elapsed: {State.TimeElapsed / 10f:0.0}s")
                             .FontSize(24),
-                        Button("Play again?")
+                        Button("Play once again?")
                             .OnClicked(PlayAgainButton_OnClicked)
                             .IsVisible(State.IsVisibleNewGameButton)
                             .FontSize(24),
@@ -69,7 +69,7 @@ public class HomePage : Component<HomePageState>
 
     private void ButtonClicked(int index)
     {
-        bool gameWon = _gameState.ClickButton(index);
+        var gameWon = _gameState.ClickButton(index);
         if (!gameWon) return;
         SetState(s =>
         {

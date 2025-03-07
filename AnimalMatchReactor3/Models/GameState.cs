@@ -16,7 +16,7 @@ public class GameState
     private bool _findingMatch;
 
     public List<AnimalButton> AnimalButtons { get; private set; } = [];
-    public int MatchesFound { get; private set; }
+    private int MatchesFound { get; set; }
 
     public GameState() => ResetGame();
 
@@ -48,7 +48,7 @@ public class GameState
             return false;
         }
 
-        bool isMatch = button.Emoji == _lastClicked!.Emoji && index != _lastIndex;
+        var isMatch = button.Emoji == _lastClicked!.Emoji && index != _lastIndex;
         if (isMatch)
         {
             AnimalButtons[index] = new AnimalButton(" ", false);

@@ -1,5 +1,5 @@
-﻿namespace AnimalMatchReactor
-{
+﻿namespace AnimalMatchReactor;
+
     public static class MauiProgram
     {
         public static MauiApp CreateMauiApp()
@@ -17,4 +17,3 @@
             return builder.Build();
         }
     }
-}

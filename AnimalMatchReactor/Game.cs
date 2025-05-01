@@ -1,8 +1,10 @@
-namespace AnimalMatchReactor.Models;
+namespace AnimalMatchReactor;
 
-public class GameState
+public class Game
 {
+    public int TimeElapsed { get; set; }
     public record AnimalButton(string Emoji, bool Selected);
+    public bool GameWon { get; private set; } = true;
 
     private readonly List<string> _animalEmojis =
     [
@@ -14,11 +16,10 @@ public class GameState
     private AnimalButton? _lastClicked;
     private int? _lastIndex = null;
     private bool _findingMatch;
-
     public List<AnimalButton> AnimalButtons { get; private set; } = [];
     private int MatchesFound { get; set; }
 
-    public GameState() => ResetGame();
+    public Game() => ResetGame();
 
     public void ResetGame()
     {
@@ -28,16 +29,18 @@ public class GameState
         _lastClicked = null;
         _lastIndex = null;
         _findingMatch = false;
+        GameWon = false;
+        TimeElapsed = 0;
     }
 
-    public bool ClickButton(int index)
+    public void Select(int index)
     {
         if (index < 0 || index >= AnimalButtons.Count)
-            return false;
+            return;
 
         var button = AnimalButtons[index];
         if (string.IsNullOrWhiteSpace(button.Emoji) || button.Selected)
-            return false; // Ignore clicks on empty or already selected buttons
+            return; // Ignore clicks on empty or already selected buttons
 
         if (!_findingMatch)
         {
@@ -45,7 +48,7 @@ public class GameState
             _lastIndex = index;
             _findingMatch = true;
             AnimalButtons[index] = button with { Selected = true };
-            return false;
+            return;
         }
 
         var isMatch = button.Emoji == _lastClicked!.Emoji && index != _lastIndex;
@@ -65,6 +68,9 @@ public class GameState
         _lastClicked = null;
         _lastIndex = null;
 
-        return MatchesFound == _animalEmojis.Count / 2; // Return true if game is won
+        if (MatchesFound == _animalEmojis.Count / 2)
+        {
+            GameWon = true;
+        }; 
     }
 }

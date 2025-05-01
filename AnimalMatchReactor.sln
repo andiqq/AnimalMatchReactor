@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AnimalMatchReactor3", "AnimalMatchReactor3\AnimalMatchReactor3.csproj", "{1EB44D9A-51C6-4F38-9C14-23147EE5C926}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AnimalMatchReactor", "AnimalMatchReactor\AnimalMatchReactor.csproj", "{1EB44D9A-51C6-4F38-9C14-23147EE5C926}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -8,7 +8,7 @@ public class Game
     public List<AnimalButton> AnimalButtons { get; private set; } = [];
     public bool GameWon { get; private set; } = true;
 
-    private List<string> _animalEmojis =
+    private readonly List<string> _animalEmojis =
     [
         "🦆", "🦅", "🐜", "🦇", "🦣", "🐿", "🐞",  "🐢" 
     ];

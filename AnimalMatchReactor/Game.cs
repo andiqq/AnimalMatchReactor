@@ -14,7 +14,7 @@ public class Game
 
     private readonly Random _rng = new();
     private AnimalButton? _lastClicked;
-    private int? _lastIndex = null;
+    private int? _lastIndex;
     private bool _findingMatch;
     public List<AnimalButton> AnimalButtons { get; private set; } = [];
     private int MatchesFound { get; set; }
@@ -71,6 +71,6 @@ public class Game
         if (MatchesFound == _animalEmojis.Count / 2)
         {
             GameWon = true;
-        }; 
+        }
     }
 }

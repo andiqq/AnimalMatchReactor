@@ -2,32 +2,29 @@ namespace AnimalMatchReactor;
 
 public class Game
 {
+    public Game() => ResetGame();
     public int TimeElapsed { get; set; }
-    public record AnimalButton(string Emoji, bool Selected);
+    public record AnimalButton(string Emoji, bool Selected, bool IsMatched);
+    public List<AnimalButton> AnimalButtons { get; private set; } = [];
     public bool GameWon { get; private set; } = true;
 
-    private readonly List<string> _animalEmojis =
+    private List<string> _animalEmojis =
     [
-        "🦆", "🦆", "🦅", "🦅", "🐜", "🐜", "🦇", "🦇",
-        "🦣", "🦣", "🐿", "🐿", "🐞", "🐞", "🐢", "🐢"
+        "🦆", "🦅", "🐜", "🦇", "🦣", "🐿", "🐞",  "🐢" 
     ];
 
-    private readonly Random _rng = new();
+    private readonly Random _random = new();
     private AnimalButton? _lastClicked;
-    private int? _lastIndex;
+    private int _lastIndex;
     private bool _findingMatch;
-    public List<AnimalButton> AnimalButtons { get; private set; } = [];
-    private int MatchesFound { get; set; }
-
-    public Game() => ResetGame();
-
+    private int _matchesFound;
+    
     public void ResetGame()
     {
-        var shuffledEmojis = _animalEmojis.OrderBy(_ => _rng.Next()).ToList();
-        AnimalButtons = shuffledEmojis.Select(e => new AnimalButton(e, false)).ToList();
-        MatchesFound = 0;
-        _lastClicked = null;
-        _lastIndex = null;
+        _animalEmojis.AddRange(_animalEmojis);
+        var shuffledEmojis = _animalEmojis.OrderBy(_ => _random.Next()).ToList();
+        AnimalButtons = shuffledEmojis.Select(e => new AnimalButton(e, false, false)).ToList();
+        _matchesFound = 0;
         _findingMatch = false;
         GameWon = false;
         TimeElapsed = 0;
@@ -35,13 +32,10 @@ public class Game
 
     public void Select(int index)
     {
-        if (index < 0 || index >= AnimalButtons.Count)
-            return;
+        if (index < 0 || index >= AnimalButtons.Count) return;
 
         var button = AnimalButtons[index];
-        if (string.IsNullOrWhiteSpace(button.Emoji) || button.Selected)
-            return; // Ignore clicks on empty or already selected buttons
-
+        
         if (!_findingMatch)
         {
             _lastClicked = button;
@@ -52,23 +46,22 @@ public class Game
         }
 
         var isMatch = button.Emoji == _lastClicked!.Emoji && index != _lastIndex;
+        
         if (isMatch)
         {
-            AnimalButtons[index] = new AnimalButton(" ", false);
-            AnimalButtons[(int)_lastIndex!] = new AnimalButton(" ", false);
-            MatchesFound++;
+            AnimalButtons[index] = button with { IsMatched = true };
+            AnimalButtons[_lastIndex] = _lastClicked! with { IsMatched = true };
+            _matchesFound++;
         }
         else
         {
             AnimalButtons[index] = button with { Selected = false };
-            AnimalButtons[(int)_lastIndex!] = _lastClicked with { Selected = false };
+            AnimalButtons[_lastIndex] = _lastClicked with { Selected = false };
         }
 
         _findingMatch = false;
-        _lastClicked = null;
-        _lastIndex = null;
-
-        if (MatchesFound == _animalEmojis.Count / 2)
+        
+        if (_matchesFound == _animalEmojis.Count / 2)
         {
             GameWon = true;
         }

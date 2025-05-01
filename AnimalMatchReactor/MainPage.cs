@@ -1,4 +1,5 @@
 ﻿using Microsoft.Maui.Layouts;
+using Button = Microsoft.Maui.Controls.Button;
 
 namespace AnimalMatchReactor;
 
@@ -27,13 +28,10 @@ public class MainPage : Component<Game>
                                         .HeightRequest(100)
                                         .WidthRequest(100)
                                         .FontSize(60)
-                                        .OnClicked(async (sender, _) =>
-                                        {
-                                            ButtonClicked(index);
-                                            var tappedButton = (VisualElement)sender!;
-                                            await tappedButton.ScaleTo(0.8, 50, Easing.Linear);
-                                            await tappedButton.ScaleTo(1, 500, Easing.SpringOut);
-                                        })
+                                        .Opacity(button.IsMatched ? 0 : 1)
+                                        .WithAnimation()
+                                        .OnClicked((button, _) => OnAnimalButtonClicked(button!, index))
+                                        
                                 )
                             )
                             .Wrap(FlexWrap.Wrap)
@@ -44,11 +42,21 @@ public class MainPage : Component<Game>
                     .Padding(20, 20)
             )
         );
+    
+    private void OnAnimalButtonClicked(object button, int buttonIndex)
+    {
+        State.Select(buttonIndex);
+        AnimateButton((Button)button);
+    }
+
+    // ReSharper disable once AsyncVoidMethod
+    private static async void AnimateButton(Button button)
+    {
+            await button.ScaleTo(0.8, 50, Easing.Linear);
+            await button.ScaleTo(1, 500, Easing.SpringOut);
+            
+    }
 
     private void PlayAgainButton_OnClicked() => SetState(s => s.ResetGame());
-
-    private void ButtonClicked(int index)
-    {
-        State.Select(index);
-    }
+    
 }

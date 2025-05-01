@@ -21,9 +21,11 @@ public class Game
     
     public void ResetGame()
     {
-        _animalEmojis.AddRange(_animalEmojis);
-        var shuffledEmojis = _animalEmojis.OrderBy(_ => _random.Next()).ToList();
-        AnimalButtons = shuffledEmojis.Select(e => new AnimalButton(e, false, false)).ToList();
+        AnimalButtons = _animalEmojis
+            .SelectMany(emoji => new[] { emoji, emoji })        // make Emoji pairs
+            .OrderBy(_ => _random.Next())                       // shuffle them
+            .Select(e => new AnimalButton(e, false, false))     // put them in AnimalButton records
+            .ToList();
         _matchesFound = 0;
         _findingMatch = false;
         GameWon = false;
@@ -61,7 +63,7 @@ public class Game
 
         _findingMatch = false;
         
-        if (_matchesFound == _animalEmojis.Count / 2)
+        if (_matchesFound == _animalEmojis.Count)
         {
             GameWon = true;
         }

@@ -30,7 +30,7 @@ public class MainPage : Component<Game>
                                         .FontSize(60)
                                         .Opacity(button.IsMatched ? 0 : 1)
                                         .WithAnimation()
-                                        .OnClicked((button, _) => OnAnimalButtonClicked(button!, index))
+                                        .OnClicked(() => OnAnimalButtonClicked(button!, index))
                                         
                                 )
                             )
@@ -54,7 +54,6 @@ public class MainPage : Component<Game>
     {
             await button.ScaleTo(0.8, 50, Easing.Linear);
             await button.ScaleTo(1, 500, Easing.SpringOut);
-            
     }
 
     private void PlayAgainButton_OnClicked() => SetState(s => s.ResetGame());

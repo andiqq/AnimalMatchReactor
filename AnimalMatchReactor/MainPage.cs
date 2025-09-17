@@ -16,7 +16,7 @@ public class MainPage : Component<Game>
                         Label($"Time elapsed: {State.TimeElapsed / 10f:0.0}s")
                             .FontSize(24),
                         Button("Play again?")
-                            .OnClicked(PlayAgainButton_OnClicked)
+                            .OnClicked(PlayAgainButtonClicked)
                             .IsVisible(State.GameWon)
                             .FontSize(24),
                         FlexLayout(
@@ -24,7 +24,7 @@ public class MainPage : Component<Game>
                                     GameButton(button)
                                         .OnClicked((clickedButton, _) =>
                                         {
-                                            State.Select(index);
+                                            State.ButtonClicked(index);
                                             AnimateButton((MauiControls.Button)clickedButton!);
                                         })
                                 )
@@ -56,5 +56,5 @@ public class MainPage : Component<Game>
         await button.ScaleTo(1, 500, Easing.SpringOut);
     }
 
-    private void PlayAgainButton_OnClicked() => SetState(s => s.ResetGame());
+    private void PlayAgainButtonClicked() => SetState(s => s.ResetGame());
 }
